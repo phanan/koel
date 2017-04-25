@@ -58,6 +58,22 @@
                 <input name="track" type="text" pattern="\d*" v-model="formData.track"
                 title="Empty or a number">
               </div>
+              <div class="form-row" v-show="editSingle">
+                  <label>Track</label>
+                  <input type="number" min="0" v-model="formData.track">
+              </div>
+              <div class="form-row">
+                  <label>Disc</label>
+                  <input type="number" min="0" v-model="formData.disc">
+              </div>
+              <div class="form-row">
+                  <label>Year</label>
+                  <input type="number" min="0" v-model="formData.albumYear">
+              </div>
+              <div class="form-row">
+                  <label>Genre</label>
+                  <input type="text" v-model="formData.genre">
+              </div>
             </div>
             <div v-show="currentView === 'lyrics' && editSingle">
               <div class="form-row">
@@ -140,15 +156,6 @@ export default {
      */
     editSingle () {
       return this.songs.length === 1
-    },
-
-    /**
-     * Determine if all songs we're editing are by the same artist.
-     *
-     * @return {boolean}
-     */
-    bySameArtist () {
-      return every(this.songs, song => song.artist.id === this.songs[0].artist.id)
     },
 
     /**
