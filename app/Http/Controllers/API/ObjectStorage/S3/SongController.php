@@ -24,17 +24,17 @@ class SongController extends Controller
     public function put(PutSongRequest $request)
     {
         $path = "s3://{$request->bucket}/{$request->key}";
-
         $tags = $request->tags;
-        $artist = Artist::get(array_get($tags, 'artist'));
-
-        $compilation = (bool) trim(array_get($tags, 'albumartist'));
-        $album = Album::get($artist, array_get($tags, 'album'), $compilation);
-
+        $artist_tag = trim(array_get($tags, 'artist'));
+        $is_compilation = false;
+        if (trim(array_get($tags, 'part_of_a_compilation')) || trim(array_get($tags, 'albumartist')) !== $artist_tag) {
+            $is_compilation = true;
+        }
+        $artist = Artist::get($artist_tag);
+        $album = Album::get($artist, trim(array_get($tags, 'album')), $is_compilation);
         if ($cover = array_get($tags, 'cover')) {
             $album->writeCoverFile(base64_decode($cover['data']), $cover['extension']);
         }
-
         $song = Song::updateOrCreate(['id' => Media::getHash($path)], [
             'path' => $path,
             'album_id' => $album->id,
